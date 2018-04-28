@@ -2,14 +2,22 @@ version: '2'
 
 services:
     db:
-        image: mysql
+        image: mysql:5.5
         volumes:
-            - "./.data/db:/var/lib/mysql"
+            - "./data/db:/var/lib/mysql"
         environment:
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             MYSQL_DATABASE: ${MYSQL_DATABASE}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        environment:
+            PMA_HOST: db
+            PMA_USER: root
+            PMA_PASSWORD: root
+        ports:
+            - 82:80
     php:
         build:
             context: php7-fpm
@@ -17,7 +25,7 @@ services:
                 TIMEZONE: ${TIMEZONE}
         volumes:
             - ${SYMFONY_APP_PATH}:/var/www/symfony
-            - ./logs/symfony:/var/www/symfony/app/logs
+            - ./logs/symfony:/var/www/symfony/var/logs
     nginx:
         build: nginx
         ports:
